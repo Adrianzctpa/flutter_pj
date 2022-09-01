@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-People peopleFromJson(String str) => People.fromJson(json.decode(str));
+Getter getterFromJson(String str) => Getter.fromJson(json.decode(str));
 
-String peopleToJson(People data) => json.encode(data.toJson());
+String getterToJson(Getter data) => json.encode(data.toJson());
 
-class People {
-    People({
+class Getter {
+    Getter({
       required this.count,
       required this.next,
       required this.previous,
@@ -15,13 +15,13 @@ class People {
     final int count;
     final String next;
     final dynamic previous;
-    final List<Result> results;
+    final List<People> results;
 
-    factory People.fromJson(Map<String, dynamic> json) => People(
+    factory Getter.fromJson(Map<String, dynamic> json) => Getter(
         count: json["count"],
         next: json["next"],
         previous: json["previous"],
-        results: List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+        results: List<People>.from(json["results"].map((x) => People.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -32,8 +32,8 @@ class People {
     };
 }
 
-class Result {
-    Result({
+class People {
+    People({
       required this.name,
       required this.height,
       required this.mass,
@@ -69,7 +69,7 @@ class Result {
     final DateTime edited;
     final String url;
 
-    factory Result.fromJson(Map<String, dynamic> json) => Result(
+    factory People.fromJson(Map<String, dynamic> json) => People(
         name: json["name"],
         height: json["height"],
         mass: json["mass"],

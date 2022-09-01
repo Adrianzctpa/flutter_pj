@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'models/people.dart';
-import 'services/fetch_service.dart';
+import 'screens/people_screen.dart';
+import 'screens/details_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,59 +12,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SWAPI Info',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.black, 
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          secondary: Colors.amber,
+          onSecondary: Colors.yellow,
+          tertiary: Colors.black54
+        ),
+        canvasColor: Colors.black,
+        fontFamily: 'Raleway',
+        textTheme: ThemeData.dark().textTheme.copyWith(
+          titleMedium: const TextStyle(
+            fontSize: 20,
+            fontFamily: 'RobotoCondensed',
+          )
+        )
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  bool isLoaded = false;
-  List<Result>? ppl; 
-
-  @override
-  void initState() {
-    super.initState();
-
-    getData();
-  }
-
-  void getData() async {
-    final data = await FetchService().getPeople();
-    if (data != null) {
-      setState(() {
-        isLoaded = true;
-        ppl = data;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: isLoaded 
-      ? ListView.builder(
-          itemCount: ppl?.length,
-          itemBuilder: (ctx, i) {
-            return Text('Hi ${ppl![i].name}');
-          }
-      )
-      : const Text('Loading..')
+      routes: {
+        '/': (ctx) => const PeopleScreen(),
+        '/person-details': (ctx) => const DetailsScreen(),
+      },
     );
   }
 }

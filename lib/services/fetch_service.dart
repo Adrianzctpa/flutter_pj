@@ -2,7 +2,7 @@ import '../models/people.dart';
 import 'package:http/http.dart' as http;
 
 class FetchService {
-  Future<List<Result>?> getPeople() async {
+  Future<List<People>?> getPeople() async {
     final client = http.Client();
     final uri = Uri.parse('https://swapi.dev/api/people');
     
@@ -10,7 +10,7 @@ class FetchService {
 
     if (response.statusCode == 200) {
       final json = response.body;
-      return peopleFromJson(json).results;
+      return getterFromJson(json).results;
     }
 
     return null;
