@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/people_screen.dart';
 import 'screens/details_screen.dart';
+import 'utils/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,8 +31,8 @@ class MyApp extends StatelessWidget {
         )
       ),
       routes: {
-        '/': (ctx) => const PeopleScreen(),
-        '/person-details': (ctx) => const DetailsScreen(),
+        AppRoutes.homePage: (ctx) => const PeopleScreen(),
+        AppRoutes.personDetails: (ctx) => const DetailsScreen(),
       },
     );
   }

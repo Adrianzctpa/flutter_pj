@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/people.dart';
+import '../utils/app_routes.dart';
 
 class PersonItem extends StatelessWidget {
   const PersonItem({required this.person, Key? key}) : super(key: key);
@@ -8,7 +9,7 @@ class PersonItem extends StatelessWidget {
 
   void _selectScreen(BuildContext context) {
     Navigator.of(context).pushNamed(
-      '/person-details', 
+      AppRoutes.personDetails, 
       arguments: person
     );
   }

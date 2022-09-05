@@ -13,9 +13,9 @@ class Getter {
     });
 
     final int count;
-    final String next;
+    final String? next;
     final dynamic previous;
-    final List<People> results;
+    final List<People>? results;
 
     factory Getter.fromJson(Map<String, dynamic> json) => Getter(
         count: json["count"],
@@ -28,7 +28,7 @@ class Getter {
         "count": count,
         "next": next,
         "previous": previous,
-        "results": List<dynamic>.from(results.map((x) => x.toJson())),
+        "results": List<dynamic>.from(results!.map((x) => x.toJson())),
     };
 }
 
@@ -108,12 +108,14 @@ class People {
     };
 }
 
-enum Gender { male, nb, female }
+enum Gender { male, nb, hermaphrodite, female }
 
 final genderValues = EnumValues({
     "female": Gender.female,
     "male": Gender.male,
-    "n/a": Gender.nb
+    "n/a": Gender.nb,
+    "none": Gender.nb,
+    "hermaphrodite": Gender.hermaphrodite
 });
 
 class EnumValues<T> {
