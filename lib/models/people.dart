@@ -111,11 +111,11 @@ class People {
 enum Gender { male, nb, hermaphrodite, female }
 
 final genderValues = EnumValues({
-    "female": Gender.female,
-    "male": Gender.male,
-    "n/a": Gender.nb,
-    "none": Gender.nb,
-    "hermaphrodite": Gender.hermaphrodite
+  "female": Gender.female,
+  "male": Gender.male,
+  "n/a": Gender.nb,
+  "none": Gender.nb,
+  "hermaphrodite": Gender.hermaphrodite
 });
 
 class EnumValues<T> {

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../services/fetch_service.dart';
 import '../models/people.dart';
+import '/components/pages.dart';
 
 class Options extends StatefulWidget {
-  const Options({required this.onSearch, Key? key}) : super(key: key);
+  const Options({required this.onSearch, required this.info, Key? key}) : super(key: key);
 
-  final void Function(List<People>?, Getter?) onSearch;
+  final void Function(List<People>?, Getter?, String?) onSearch;
+  final Getter? info;
 
   @override
   State<Options> createState() => _OptionsState();
@@ -16,10 +18,12 @@ class _OptionsState extends State<Options> {
 
   void _handleSearch() async {
     final String name = searchController.text;
-    if (name.isNotEmpty) {
-      final data = await FetchService().getPeopleByName(name);
-      widget.onSearch(data!.results, data);
-    }
+    
+    final data = name.isNotEmpty 
+    ? await FetchService().getPeopleByName(name)
+    : await FetchService().getPeople();
+
+    widget.onSearch(data!.results, data, name);
   }
 
   @override
@@ -77,7 +81,12 @@ class _OptionsState extends State<Options> {
         children: <Widget>[
           searcher,
           const SizedBox(height: 10),
-          btn
+          btn,
+          Pages(
+            info: widget.info!, 
+            updState: widget.onSearch, 
+            filter: searchController.text,
+          ),
         ],
       ),
     );

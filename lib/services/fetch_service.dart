@@ -29,8 +29,10 @@ class FetchService {
     return null;
   }
 
-  Future<Getter?> getPeopleByPage(int num) async {
-    final uri = Uri.parse('$api?page=$num');
+  Future<Getter?> getPeopleByPage(int num, [String filter = '']) async {
+    final uri = filter == '' 
+    ? Uri.parse('$api?page=$num') 
+    : Uri.parse('$api?search=$filter&page=$num');
     final response = await client.get(uri);
 
     if (response.statusCode == 200) {

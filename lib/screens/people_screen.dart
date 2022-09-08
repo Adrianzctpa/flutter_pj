@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/people.dart';
 import '../components/person_item.dart';
 import '../components/options.dart';
-import '../components/pages.dart';
 import '../services/fetch_service.dart';
 
 class PeopleScreen extends StatefulWidget {
@@ -13,10 +12,12 @@ class PeopleScreen extends StatefulWidget {
 }
 
 class _PeopleScreenState extends State<PeopleScreen> {
-  bool isLoaded = false;
+  bool? isLoaded = false;
+  bool? canUpdate = false;
   final searchController = TextEditingController();
   Getter? info;
   List<People>? ppl; 
+  String? filter;
 
   @override
   void initState() {
@@ -25,10 +26,12 @@ class _PeopleScreenState extends State<PeopleScreen> {
     getData();
   }
 
-  void _handleSearch(List<People>? arg, Getter? getter) async {
+  void _handleSearch(List<People>? arg, Getter? getter, String? name) async {
     setState(() {
       ppl = arg;
       info = getter;
+      filter = name;
+      canUpdate = true;
     }); 
   }
 
@@ -50,7 +53,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         title: const Center(child: Text('SWAPI People')),
         actions: <Widget>[
-          if (isLoaded)
+          if (isLoaded != null && isLoaded == true)
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
@@ -58,8 +61,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
                   context: context,
                   builder: (ctx) => Column(
                     children: <Widget>[
-                      Options(onSearch: _handleSearch),
-                      Pages(info: info!, updState: _handleSearch),
+                      Options(onSearch: _handleSearch, info: info!),
                     ]
                   ),
                 );
@@ -76,7 +78,7 @@ class _PeopleScreenState extends State<PeopleScreen> {
             mainAxisSpacing: 20,
           ),
           children: <Widget>[
-            if (isLoaded)
+            if (isLoaded != null && isLoaded == true)
               for (var i = 0; i < ppl!.length; i++)
                 PersonItem(
                   person: ppl![i],

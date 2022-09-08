@@ -3,29 +3,47 @@ import '../models/people.dart';
 import '../services/fetch_service.dart';
 
 class Pages extends StatefulWidget {
-  const Pages({required this.info, required this.updState, Key? key}) : super(key: key);
+
+  const Pages({
+    required this.info, 
+    required this.updState,
+    required this.filter, 
+    Key? key}) : super(key: key);
 
   final Getter info;
-  final void Function(List<People>?, Getter?) updState;
+  final String? filter;
+  final void Function(List<People>?, Getter?, String?) updState;
 
   @override
   State<Pages> createState() => _PagesState();
 }
 
 class _PagesState extends State<Pages> {
+  static const int minItemsForPage = 10;
   bool isDisabled = false;
   int nextPage = 2;
   int previousPage = 0;
+
+  int get _pages {
+    if (widget.info.count > minItemsForPage) {
+      return (widget.info.count / minItemsForPage).ceil();
+    } else {
+      return 0;
+    }
+  }
 
   void _handlePage(int num, String id) async {
     setState(() {
       isDisabled = true;
     });
     
-    final data = await FetchService().getPeopleByPage(num);
+    final data = widget.filter == null 
+    ? await FetchService().getPeopleByPage(num)
+    : await FetchService().getPeopleByPage(num, widget.filter as String);
+    
     if (data != null) {
       setState(() {
-        widget.updState(data.results, data);
+        widget.updState(data.results, data, widget.filter);
 
         switch (id) {
           case 'next':
@@ -41,8 +59,10 @@ class _PagesState extends State<Pages> {
             previousPage = 0; 
             break;   
         }
-
-        debugPrint('$nextPage');
+      });
+    } else {
+      setState(() {
+        nextPage = widget.info.count + 1;
       });
     }
 
@@ -51,21 +71,43 @@ class _PagesState extends State<Pages> {
     });
   }
 
+  void _handlePageLoad(String? prev, String? next) {
+    if (next == null) {
+      setState(() {
+        nextPage = widget.info.count + 1;
+      });
+    }
+
+    if (prev != null) {
+      final uri = Uri.parse(prev);
+      final int id = int.parse(uri.queryParameters['page'] as String) + 1;
+      
+      if ((id + 1) <= _pages && _pages != 0)  {
+        setState(() {
+          nextPage = id + 1;
+          previousPage = id - 1;
+        });
+      }
+    }
+  }
+
+  @override 
+  void initState () {
+    super.initState();
+
+    _handlePageLoad(widget.info.previous, widget.info.next);
+  }
+
   @override
   Widget build(BuildContext context) {
     final int currentPage = nextPage - 1;
 
-    const int minItemsForPage = 10;
-    final int pages = widget.info.count > minItemsForPage 
-    ? (widget.info.count / minItemsForPage).ceil()
-    : 0;
-
     bool canDecrement = (previousPage - 1) >= 0;
-    bool canIncrement = (currentPage + 1) <= pages && (previousPage + 1) < pages;
+    bool canIncrement = (currentPage + 1) <= _pages && (previousPage + 1) < _pages;
 
     return Stack(
       children: <Widget>[
-        if (pages != 0)
+        if (_pages != 0)
           Align(
             alignment: Alignment.centerLeft,
             child: IconButton(
