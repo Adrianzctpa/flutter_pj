@@ -49,43 +49,44 @@ class _PeopleScreenState extends State<PeopleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: const Center(child: Text('SWAPI People')),
-        actions: <Widget>[
-          if (isLoaded != null && isLoaded == true)
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (ctx) => Column(
-                    children: <Widget>[
-                      Options(onSearch: _handleSearch, info: info!),
-                    ]
-                  ),
-                );
-              },
-            ),
-        ]
-      ),
       body:
-        GridView(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 200,
-            childAspectRatio: 3 / 2,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 20,
-          ),
-          children: <Widget>[
+        Column(
+          children: [
             if (isLoaded != null && isLoaded == true)
-              for (var i = 0; i < ppl!.length; i++)
-                PersonItem(
-                  person: ppl![i],
-                )
-            else
-              const Text('Loading...')
-          ]
+              IconButton(
+                icon: const Icon(Icons.settings),
+                color: Theme.of(context).colorScheme.secondary,
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (ctx) => Column(
+                      children: <Widget>[
+                        Options(onSearch: _handleSearch, info: info!),
+                      ]
+                    ),
+                  );
+                },
+              ),
+            Expanded(
+              child: GridView(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  childAspectRatio: 3 / 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                ),
+                children: <Widget>[
+                  if (isLoaded != null && isLoaded == true)
+                    for (var i = 0; i < ppl!.length; i++)
+                      PersonItem(
+                        person: ppl![i],
+                      )
+                  else
+                    const Text('Loading...')
+                ]
+              ),
+            ),
+          ],
         ),
       );
   }

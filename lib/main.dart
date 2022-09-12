@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/people_screen.dart';
 import 'screens/details_screen.dart';
+import 'screens/tabs_screen.dart';
 import 'utils/app_routes.dart';
 
 void main() {
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         )
       ),
       routes: {
-        AppRoutes.homePage: (ctx) => const PeopleScreen(),
+        AppRoutes.homePage: (ctx) => const TabsScreen(),
         AppRoutes.personDetails: (ctx) => const DetailsScreen(),
       },
       onUnknownRoute: (settings) {
