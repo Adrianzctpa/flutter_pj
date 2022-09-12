@@ -27,12 +27,18 @@ class MyApp extends StatelessWidget {
           titleMedium: const TextStyle(
             fontSize: 20,
             fontFamily: 'RobotoCondensed',
+            color: Colors.black
           )
         )
       ),
       routes: {
         AppRoutes.homePage: (ctx) => const PeopleScreen(),
         AppRoutes.personDetails: (ctx) => const DetailsScreen(),
+      },
+      onUnknownRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (_) => const PeopleScreen(),
+        );
       },
     );
   }

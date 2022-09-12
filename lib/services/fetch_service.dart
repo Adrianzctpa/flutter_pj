@@ -1,9 +1,42 @@
 import '../models/people.dart';
+import '../models/films.dart';
 import 'package:http/http.dart' as http;
+import '../utils/swapi_routes.dart';
 
 class FetchService {
   final client = http.Client();
-  final api = 'https://swapi.dev/api/people';
+  final api = SWAPIRoutes.swAPI;
+  final filmsAPI = SWAPIRoutes.filmsAPI;
+
+  Future<Films?> genericFetcher(String uri) async {
+    final response = await client.get(Uri.parse(uri));
+    if (response.statusCode == 200) {
+      final json = response.body;
+      return filmFromJson(json);
+    }
+
+    return null;
+  }
+
+  Future<Getter?> getFilms() async {
+    final response = await client.get(Uri.parse(filmsAPI));
+    if (response.statusCode == 200) {
+      final json = response.body;
+      return getterFromJson(json);
+    }
+
+    return null;
+  }
+
+  Future<Getter?> getFilmsByName(String name) async {
+    final response = await client.get(Uri.parse('$filmsAPI?search=$name'));
+    if (response.statusCode == 200) {
+      final json = response.body;
+      return getterFromJson(json);
+    }
+
+    return null;
+  }
 
   Future<Getter?> getPeople() async {   
     final uri = Uri.parse(api);

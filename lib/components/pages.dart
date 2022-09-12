@@ -32,6 +32,28 @@ class _PagesState extends State<Pages> {
     }
   }
 
+  bool get _shouldNextPageBeEnabled {
+    final int currentPage = nextPage - 1;
+    final bool canIncrement = (currentPage + 1) <= _pages;
+    final bool canIncrementPrevious = (previousPage + 1) < _pages;
+
+    if (canIncrement && canIncrementPrevious) {
+      return true;
+    } 
+
+    return false;
+  }
+
+  bool get _shouldPreviousPageBeEnabled {
+    final bool canDecrement = (previousPage - 1) >= 0;
+
+    if (canDecrement) {
+      return true;
+    } 
+
+    return false;
+  }
+
   void _handlePage(int num, String id) async {
     setState(() {
       isDisabled = true;
@@ -41,6 +63,8 @@ class _PagesState extends State<Pages> {
     ? await FetchService().getPeopleByPage(num)
     : await FetchService().getPeopleByPage(num, widget.filter as String);
     
+    debugPrint('$_pages');
+
     if (data != null) {
       setState(() {
         widget.updState(data.results, data, widget.filter);
@@ -100,11 +124,6 @@ class _PagesState extends State<Pages> {
 
   @override
   Widget build(BuildContext context) {
-    final int currentPage = nextPage - 1;
-
-    bool canDecrement = (previousPage - 1) >= 0;
-    bool canIncrement = (currentPage + 1) <= _pages && (previousPage + 1) < _pages;
-
     return Stack(
       children: <Widget>[
         if (_pages != 0)
@@ -113,7 +132,7 @@ class _PagesState extends State<Pages> {
             child: IconButton(
               color: Theme.of(context).colorScheme.secondary,
               icon: const Icon(Icons.arrow_back),
-              onPressed: isDisabled || !canDecrement
+              onPressed: isDisabled || !_shouldPreviousPageBeEnabled
               ? null
               : () async {
                   _handlePage(previousPage, 'previous');
@@ -136,7 +155,7 @@ class _PagesState extends State<Pages> {
             child: IconButton(
               color: Theme.of(context).colorScheme.secondary,
               icon: const Icon(Icons.arrow_forward),
-              onPressed: isDisabled || !canIncrement
+              onPressed: isDisabled || !_shouldNextPageBeEnabled
               ? null
               : () async {
                   _handlePage(nextPage, 'next');

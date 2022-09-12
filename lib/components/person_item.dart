@@ -19,24 +19,30 @@ class PersonItem extends StatelessWidget {
     return InkWell(
       onTap: () => _selectScreen(context),
       borderRadius: BorderRadius.circular(15),
-      child: Container(
-        padding: const EdgeInsets.all(25),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.secondary,
-              Theme.of(context).colorScheme.onSecondary,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          padding: const EdgeInsets.all(25),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.secondary,
+                Theme.of(context).colorScheme.onSecondary,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
+          child: Center(
+            child: Text(
+              person.name,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          )
         ),
-        child: Text(
-          person.name,
-          style: Theme.of(context).textTheme.titleMedium,
-        )
       ),
     );
   }
+
 }

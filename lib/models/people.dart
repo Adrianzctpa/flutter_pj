@@ -50,6 +50,7 @@ class People {
       required this.created,
       required this.edited,
       required this.url,
+      required this.id
     });
 
     final String name;
@@ -59,7 +60,7 @@ class People {
     final String skinColor;
     final String eyeColor;
     final String birthYear;
-    final Gender gender;
+    final String gender;
     final String homeworld;
     final List<String> films;
     final List<String> species;
@@ -68,8 +69,13 @@ class People {
     final DateTime created;
     final DateTime edited;
     final String url;
+    final int id;
 
-    factory People.fromJson(Map<String, dynamic> json) => People(
+    factory People.fromJson(Map<String, dynamic> json) {
+      final RegExp getNumbersFromStr = RegExp(r'[^0-9]');
+      final id = int.parse(json['url'].replaceAll(getNumbersFromStr, ''));
+
+      return People(        
         name: json["name"],
         height: json["height"],
         mass: json["mass"],
@@ -77,7 +83,7 @@ class People {
         skinColor: json["skin_color"],
         eyeColor: json["eye_color"],
         birthYear: json["birth_year"],
-        gender: genderValues.map[json["gender"]] as Gender,
+        gender: json["gender"],
         homeworld: json["homeworld"],
         films: List<String>.from(json["films"].map((x) => x)),
         species: List<String>.from(json["species"].map((x) => x)),
@@ -86,7 +92,9 @@ class People {
         created: DateTime.parse(json["created"]),
         edited: DateTime.parse(json["edited"]),
         url: json["url"],
-    );
+        id: id
+      );
+    }
 
     Map<String, dynamic> toJson() => {
         "name": name,
@@ -96,7 +104,7 @@ class People {
         "skin_color": skinColor,
         "eye_color": eyeColor,
         "birth_year": birthYear,
-        "gender": genderValues.reverse![gender],
+        "gender": gender,
         "homeworld": homeworld,
         "films": List<dynamic>.from(films.map((x) => x)),
         "species": List<dynamic>.from(species.map((x) => x)),
@@ -105,27 +113,6 @@ class People {
         "created": created.toIso8601String(),
         "edited": edited.toIso8601String(),
         "url": url,
+        "id": id
     };
-}
-
-enum Gender { male, nb, hermaphrodite, female }
-
-final genderValues = EnumValues({
-  "female": Gender.female,
-  "male": Gender.male,
-  "n/a": Gender.nb,
-  "none": Gender.nb,
-  "hermaphrodite": Gender.hermaphrodite
-});
-
-class EnumValues<T> {
-    Map<String, T> map;
-    Map<T, String>? reverseMap;
-
-    EnumValues(this.map);
-
-    Map<T, String>? get reverse {
-        reverseMap ??= map.map((k, v) => MapEntry(v, k));
-        return reverseMap;
-    }
 }
