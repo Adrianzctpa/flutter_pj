@@ -5,7 +5,10 @@ import '../services/fetch_service.dart';
 import '../utils/swapi_routes.dart';
 
 class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({Key? key}) : super(key: key);
+  const DetailsScreen({required this.isFavorite, required this.onToggleFavorite, Key? key}) : super(key: key);
+
+  final Function(People) onToggleFavorite;
+  final bool Function(People) isFavorite;
 
   Future<List<Films>> loadFilms(List<String> url) async {
     final List<Films> films = [];
@@ -147,10 +150,12 @@ class DetailsScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pop(person);
+          onToggleFavorite(person);
         },
         child: Icon(
-          Icons.star,
+          isFavorite(person) 
+          ? Icons.star
+          : Icons.star_border,
           color: Theme.of(context).primaryColor
         ),
       ),

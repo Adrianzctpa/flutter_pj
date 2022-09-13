@@ -11,14 +11,7 @@ class PersonItem extends StatelessWidget {
     Navigator.of(context).pushNamed(
       AppRoutes.personDetails, 
       arguments: person
-    ).then((result) {
-      if (result != null) {
-        final People results = result as People;
-        debugPrint('Result: ${results.name}');
-      } else {
-        debugPrint('No results.');
-      }
-    });
+    );
   }
 
   @override
