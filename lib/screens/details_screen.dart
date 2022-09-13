@@ -145,6 +145,15 @@ class DetailsScreen extends StatelessWidget {
           ]
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pop(person);
+        },
+        child: Icon(
+          Icons.star,
+          color: Theme.of(context).primaryColor
+        ),
+      ),
     );
   }
 }

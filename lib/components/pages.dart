@@ -62,8 +62,6 @@ class _PagesState extends State<Pages> {
     final data = widget.filter == null 
     ? await FetchService().getPeopleByPage(num)
     : await FetchService().getPeopleByPage(num, widget.filter as String);
-    
-    debugPrint('$_pages');
 
     if (data != null) {
       setState(() {

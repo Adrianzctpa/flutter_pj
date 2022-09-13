@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/people.dart';
 import '../components/person_item.dart';
-import '../components/options.dart';
+import '../components/page_options.dart';
 import '../services/fetch_service.dart';
 
 class PeopleScreen extends StatefulWidget {
@@ -49,45 +49,44 @@ class _PeopleScreenState extends State<PeopleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-        Column(
-          children: [
-            if (isLoaded != null && isLoaded == true)
-              IconButton(
-                icon: const Icon(Icons.settings),
-                color: Theme.of(context).colorScheme.secondary,
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (ctx) => Column(
-                      children: <Widget>[
-                        Options(onSearch: _handleSearch, info: info!),
-                      ]
-                    ),
-                  );
-                },
-              ),
-            Expanded(
-              child: GridView(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  childAspectRatio: 3 / 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                ),
-                children: <Widget>[
-                  if (isLoaded != null && isLoaded == true)
-                    for (var i = 0; i < ppl!.length; i++)
-                      PersonItem(
-                        person: ppl![i],
-                      )
-                  else
-                    const Text('Loading...')
-                ]
-              ),
+      body: Column(
+        children: [
+          if (isLoaded != null && isLoaded == true)
+            IconButton(
+              icon: const Icon(Icons.book),
+              color: Theme.of(context).colorScheme.secondary,
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) => Column(
+                    children: <Widget>[
+                      PageOptions(onSearch: _handleSearch, info: info),
+                    ]
+                  ),
+                );
+              },
             ),
-          ],
-        ),
-      );
+          Expanded(
+            child: GridView(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200,
+                childAspectRatio: 3 / 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+              ),
+              children: <Widget>[
+                if (isLoaded != null && isLoaded == true)
+                  for (var i = 0; i < ppl!.length; i++)
+                    PersonItem(
+                      person: ppl![i],
+                    )
+                else
+                  const Text('Loading...')
+              ]
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

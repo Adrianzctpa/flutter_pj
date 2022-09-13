@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/people_screen.dart';
 import 'screens/details_screen.dart';
 import 'screens/tabs_screen.dart';
+import 'screens/settings_screen.dart';
 import 'utils/app_routes.dart';
 
 void main() {
@@ -34,11 +35,13 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         AppRoutes.homePage: (ctx) => const TabsScreen(),
+        AppRoutes.peoplePage: (ctx) => const PeopleScreen(),
         AppRoutes.personDetails: (ctx) => const DetailsScreen(),
+        AppRoutes.settings: (ctx) => const SettingsScreen(),
       },
       onUnknownRoute: (settings) {
         return MaterialPageRoute(
-          builder: (_) => const PeopleScreen(),
+          builder: (_) => const TabsScreen(),
         );
       },
     );

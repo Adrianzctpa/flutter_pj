@@ -3,17 +3,17 @@ import '../services/fetch_service.dart';
 import '../models/people.dart';
 import '/components/pages.dart';
 
-class Options extends StatefulWidget {
-  const Options({required this.onSearch, required this.info, Key? key}) : super(key: key);
+class PageOptions extends StatefulWidget {
+  const PageOptions({required this.onSearch, required this.info, Key? key}) : super(key: key);
 
   final void Function(List<People>?, Getter?, String?) onSearch;
   final Getter? info;
 
   @override
-  State<Options> createState() => _OptionsState();
+  State<PageOptions> createState() => _OptionsState();
 }
 
-class _OptionsState extends State<Options> {
+class _OptionsState extends State<PageOptions> {
   final searchController = TextEditingController();
 
   void _handleSearch() async {

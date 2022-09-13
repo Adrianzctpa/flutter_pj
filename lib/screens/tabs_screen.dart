@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'people_screen.dart';
 import 'saved_screen.dart';
+import '../components/main_drawer.dart';
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({Key? key}) : super(key: key);
@@ -35,6 +36,7 @@ class _TabsScreenState extends State<TabsScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         title: Center(child: Text(_screens[_selectedPageIndex]['title'] as String)),
       ),
+      drawer: const MainDrawer(),
       body: _screens[_selectedPageIndex]['screen'] as Widget,
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
