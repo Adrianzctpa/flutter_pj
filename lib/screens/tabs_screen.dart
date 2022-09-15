@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import '../models/people.dart';
 import 'people_screen.dart';
 import 'saved_screen.dart';
 import '../components/main_drawer.dart';
 
 class TabsScreen extends StatefulWidget {
-  const TabsScreen({required this.favoritePeople, Key? key}) : super(key: key);
+  const TabsScreen({Key? key}) : super(key: key);
 
-  final List<People> favoritePeople;
 
   @override
   State<TabsScreen> createState() => _TabsScreenState();
@@ -27,7 +25,7 @@ class _TabsScreenState extends State<TabsScreen> {
     },
     {
       'title': 'Saved People',
-      'screen': SavedScreen(favoritePeople: widget.favoritePeople),
+      'screen': const SavedScreen(),
     }
   ];
   }

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import '../providers/favorite.dart';
 import '../models/people.dart';
 import '../models/films.dart';
 import '../services/fetch_service.dart';
 import '../utils/swapi_routes.dart';
 
-class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({required this.isFavorite, required this.onToggleFavorite, Key? key}) : super(key: key);
+class DetailsScreen extends StatefulWidget {
+  const DetailsScreen({Key? key}) : super(key: key);
 
-  final Function(People) onToggleFavorite;
-  final bool Function(People) isFavorite;
+  @override
+  State<DetailsScreen> createState() => _DetailsScreenState();
+}
 
+class _DetailsScreenState extends State<DetailsScreen> {
   Future<List<Films>> loadFilms(List<String> url) async {
     final List<Films> films = [];
 
@@ -69,6 +72,7 @@ class DetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     final person = ModalRoute.of(context)!.settings.arguments as People;
+    final ctx = FavoriteProvider.of(context)!.state;
 
     return Scaffold(
       appBar: AppBar(
@@ -150,10 +154,12 @@ class DetailsScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          onToggleFavorite(person);
+          setState(() {
+            ctx.toggleFavorite(person);
+          });
         },
         child: Icon(
-          isFavorite(person) 
+          ctx.isFavorite(person) 
           ? Icons.star
           : Icons.star_border,
           color: Theme.of(context).primaryColor

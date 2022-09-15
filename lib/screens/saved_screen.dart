@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
-import '../models/people.dart';
+import '../providers/favorite.dart';
 import '../components/person_item.dart';
 
-class SavedScreen extends StatelessWidget {
-  const SavedScreen({required this.favoritePeople, Key? key}) : super(key: key);
+class SavedScreen extends StatefulWidget {
+  const SavedScreen({Key? key}) : super(key: key);
 
-  final List<People> favoritePeople;
-  
+  @override
+  State<SavedScreen> createState() => _SavedScreenState();
+}
+
+class _SavedScreenState extends State<SavedScreen> {
   @override
   Widget build(BuildContext context) {
-    if (favoritePeople.isEmpty) {
+    final favPeople = FavoriteProvider.of(context)!.state.favPeople;
+    if (favPeople.isEmpty) {
       return const Center(
         child: Text('No saved people!'),
       );
     } else {
       return ListView.builder(
-        itemCount: favoritePeople.length,
+        itemCount: favPeople.length,
         itemBuilder: (ctx, index) {
           return PersonItem(
-            person: favoritePeople[index],
+            person: favPeople[index],
           );
         },
       );

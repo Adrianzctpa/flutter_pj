@@ -4,10 +4,9 @@ import '../models/people.dart';
 import '/components/pages.dart';
 
 class PageOptions extends StatefulWidget {
-  const PageOptions({required this.onSearch, required this.info, Key? key}) : super(key: key);
+  const PageOptions({required this.onSearch, Key? key}) : super(key: key);
 
-  final void Function(List<People>?, Getter?, String?) onSearch;
-  final Getter? info;
+  final void Function(List<People>, Getter, String?) onSearch;
 
   @override
   State<PageOptions> createState() => _OptionsState();
@@ -23,8 +22,9 @@ class _OptionsState extends State<PageOptions> {
     ? await FetchService().getPeopleByName(name)
     : await FetchService().getPeople();
 
-    widget.onSearch(data!.results, data, name);
+    widget.onSearch(data!.results as List<People>, data, name);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,8 +82,7 @@ class _OptionsState extends State<PageOptions> {
           searcher,
           const SizedBox(height: 10),
           btn,
-          Pages(
-            info: widget.info!, 
+          Pages(           
             updState: widget.onSearch, 
             filter: searchController.text,
           ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/people.dart';
+import '../models/people_list.dart';
 import '../components/person_item.dart';
 import '../components/page_options.dart';
 import '../services/fetch_service.dart';
@@ -15,39 +17,39 @@ class _PeopleScreenState extends State<PeopleScreen> {
   bool? isLoaded = false;
   bool? canUpdate = false;
   final searchController = TextEditingController();
-  Getter? info;
-  List<People>? ppl; 
   String? filter;
 
-  @override
-  void initState() {
-    super.initState();
-
-    getData();
-  }
-
-  void _handleSearch(List<People>? arg, Getter? getter, String? name) async {
+  void _handleSearch(List<People> arg, Getter getter, String? name) async {
+    Provider.of<PeopleList>(context, listen:false).setInfo(arg, getter);
     setState(() {
-      ppl = arg;
-      info = getter;
       filter = name;
       canUpdate = true;
     }); 
   }
 
+  @override
+  void initState() {
+    super.initState();
+    
+    getData();
+  }
+
   void getData() async {
+    final pplClass = Provider.of<PeopleList>(context, listen:false);
     final data = await FetchService().getPeople();
     if (data != null) {
+      pplClass.setInfo(data.results as List<People>, data);
       setState(() {
         isLoaded = true;
-        info = data;
-        ppl = data.results;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final pplClass = Provider.of<PeopleList>(context);
+
+    final ppl = pplClass.people;
     return Scaffold(
       body: Column(
         children: [
@@ -60,7 +62,9 @@ class _PeopleScreenState extends State<PeopleScreen> {
                   context: context,
                   builder: (ctx) => Column(
                     children: <Widget>[
-                      PageOptions(onSearch: _handleSearch, info: info),
+                      PageOptions(
+                        onSearch: _handleSearch,
+                      ),
                     ]
                   ),
                 );
@@ -76,9 +80,9 @@ class _PeopleScreenState extends State<PeopleScreen> {
               ),
               children: <Widget>[
                 if (isLoaded != null && isLoaded == true)
-                  for (var i = 0; i < ppl!.length; i++)
+                  for (var i = 0; i < ppl.length; i++)
                     PersonItem(
-                      person: ppl![i],
+                      person: ppl[i],
                     )
                 else
                   const Text('Loading...')
