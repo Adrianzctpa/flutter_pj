@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/models/people_list.dart';
-import 'providers/favorite.dart';
 import 'screens/people_screen.dart';
 import 'screens/details_screen.dart';
 import 'screens/tabs_screen.dart';

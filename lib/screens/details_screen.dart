@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../providers/favorite.dart';
+import 'package:provider/provider.dart';
+import '../models/people_list.dart';
 import '../models/people.dart';
 import '../models/films.dart';
 import '../services/fetch_service.dart';
@@ -72,7 +73,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context){
     final person = ModalRoute.of(context)!.settings.arguments as People;
-    final ctx = FavoriteProvider.of(context)!.state;
+    final favPeopleSet = Provider.of<PeopleList>(context).toggleFavorite;
+    final isFavorite = Provider.of<PeopleList>(context).isFavorite(person);
 
     return Scaffold(
       appBar: AppBar(
@@ -155,11 +157,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            ctx.toggleFavorite(person);
+            favPeopleSet(person);
           });
         },
         child: Icon(
-          ctx.isFavorite(person) 
+          isFavorite
           ? Icons.star
           : Icons.star_border,
           color: Theme.of(context).primaryColor

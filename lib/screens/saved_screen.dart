@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../providers/favorite.dart';
+import 'package:provider/provider.dart';
+import '../models/people_list.dart';
 import '../components/person_item.dart';
 
 class SavedScreen extends StatefulWidget {
@@ -12,7 +13,8 @@ class SavedScreen extends StatefulWidget {
 class _SavedScreenState extends State<SavedScreen> {
   @override
   Widget build(BuildContext context) {
-    final favPeople = FavoriteProvider.of(context)!.state.favPeople;
+    final favPeople = Provider.of<PeopleList>(context).favPeople;
+
     if (favPeople.isEmpty) {
       return const Center(
         child: Text('No saved people!'),

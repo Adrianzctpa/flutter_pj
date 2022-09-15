@@ -14,6 +14,22 @@ class PeopleList with ChangeNotifier {
   List<People> get people => [..._ppl];
   Getter get getter => _getter;
 
+  // Favorites
+  final List<People> _favoritePeople = [];
+
+  void toggleFavorite(People person) {
+    _favoritePeople.contains(person)
+    ? _favoritePeople.remove(person)
+    : _favoritePeople.add(person);
+    notifyListeners();
+  }
+
+  bool isFavorite(People person) {
+    return _favoritePeople.contains(person);
+  }
+
+  List<People> get favPeople => _favoritePeople;
+
   // Pages
   static const int minItemsForPage = 10;
   int nextPage = 2;
