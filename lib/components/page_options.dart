@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/fetch_service.dart';
+import '../models/people_list.dart';
 import '../models/people.dart';
 import '/components/pages.dart';
 
 class PageOptions extends StatefulWidget {
   const PageOptions({required this.onSearch, Key? key}) : super(key: key);
 
-  final void Function(List<People>, Getter, String?) onSearch;
+  final void Function(List<People>, Getter) onSearch;
 
   @override
   State<PageOptions> createState() => _OptionsState();
@@ -17,12 +19,15 @@ class _OptionsState extends State<PageOptions> {
 
   void _handleSearch() async {
     final String name = searchController.text;
-    
+    final pplClass = Provider.of<PeopleList>(context, listen: false);
+    pplClass.setPages(0,2);
+    pplClass.setFilter(name);
+  
     final data = name.isNotEmpty 
     ? await FetchService().getPeopleByName(name)
     : await FetchService().getPeople();
 
-    widget.onSearch(data!.results as List<People>, data, name);
+    widget.onSearch(data!.results as List<People>, data);
   }
 
 
@@ -53,7 +58,7 @@ class _OptionsState extends State<PageOptions> {
     );
 
     final ElevatedButton btn = ElevatedButton(
-      onPressed: _handleSearch,
+      onPressed: () => _handleSearch,
       style: ElevatedButton.styleFrom(
         primary: Theme.of(context).primaryColor,
         textStyle: const TextStyle(
@@ -84,7 +89,6 @@ class _OptionsState extends State<PageOptions> {
           btn,
           Pages(           
             updState: widget.onSearch, 
-            filter: searchController.text,
           ),
         ],
       ),

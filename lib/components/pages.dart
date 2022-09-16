@@ -8,11 +8,9 @@ class Pages extends StatefulWidget {
 
   const Pages({
     required this.updState,
-    required this.filter, 
     Key? key}) : super(key: key);
 
-  final String? filter;
-  final void Function(List<People>, Getter, String?) updState;
+  final void Function(List<People>, Getter) updState;
 
   @override
   State<Pages> createState() => _PagesState();
@@ -23,6 +21,7 @@ class _PagesState extends State<Pages> {
 
   void _handlePage(int num, String id, BuildContext context) async {
     final pplClass = Provider.of<PeopleList>(context, listen: false);
+
     int prevPage = pplClass.previousPage;
     int nextPage = pplClass.nextPage;
 
@@ -30,9 +29,11 @@ class _PagesState extends State<Pages> {
       isDisabled = true;
     });
     
-    final data = widget.filter == null 
+    Getter? data;  
+
+    data = pplClass.filter == '' || id == 'home'
     ? await FetchService().getPeopleByPage(num)
-    : await FetchService().getPeopleByPage(num, widget.filter as String);
+    : await FetchService().getPeopleByPage(num, pplClass.filter);
 
     switch (id) {
       case 'next':
@@ -43,11 +44,12 @@ class _PagesState extends State<Pages> {
         break;
       case 'home':
         pplClass.setPages(0, 2);
+        pplClass.setFilter('');
         break;   
     }
 
     if (data != null) {
-      widget.updState(data.results as List<People>, data, widget.filter);
+      widget.updState(data.results as List<People>, data);
     } else {
       pplClass.setPages(prevPage, nextPage + pplClass.getter.count);
     }

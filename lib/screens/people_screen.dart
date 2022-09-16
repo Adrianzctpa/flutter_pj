@@ -16,13 +16,13 @@ class PeopleScreen extends StatefulWidget {
 class _PeopleScreenState extends State<PeopleScreen> {
   bool? isLoaded = false;
   bool? canUpdate = false;
-  final searchController = TextEditingController();
-  String? filter;
 
-  void _handleSearch(List<People> arg, Getter getter, String? name) async {
-    Provider.of<PeopleList>(context, listen:false).setInfo(arg, getter);
+  void _handleSearch(List<People> arg, Getter getter) async {
+    final pplClass = Provider.of<PeopleList>(context, listen: false);
+    final id = pplClass.id + 1;
+    pplClass.setInfo(arg, getter, id);
+    
     setState(() {
-      filter = name;
       canUpdate = true;
     }); 
   }
@@ -36,13 +36,18 @@ class _PeopleScreenState extends State<PeopleScreen> {
 
   void getData() async {
     final pplClass = Provider.of<PeopleList>(context, listen:false);
-    final data = await FetchService().getPeople();
-    if (data != null) {
-      pplClass.setInfo(data.results as List<People>, data);
+    final num = pplClass.id + 1;
+
+    if (pplClass.id == 0) {
+      final data = await FetchService().getPeople();
+      pplClass.setInfo(data!.results as List<People>, data, num);
+    }
+
+    if (pplClass.people.isNotEmpty) {
       setState(() {
         isLoaded = true;
       });
-    }
+    }  
   }
 
   @override

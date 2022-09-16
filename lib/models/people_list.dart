@@ -4,15 +4,18 @@ import 'people.dart';
 class PeopleList with ChangeNotifier {
   List<People> _ppl = [];
   Getter _getter = Getter(next: null, previous: null, count: 0, results: []);
+  int _id = 0;
 
-  void setInfo(List<People> people, Getter info) {
+  void setInfo(List<People> people, Getter info, [int? id]) {
     _ppl = people;
     _getter = info;
+    id != null ? _id = id : _id = _id;
     notifyListeners();
   }
 
   List<People> get people => [..._ppl];
   Getter get getter => _getter;
+  int get id => _id;
 
   // Favorites
   final List<People> _favoritePeople = [];
@@ -32,6 +35,7 @@ class PeopleList with ChangeNotifier {
 
   // Pages
   static const int minItemsForPage = 10;
+  String filter = '';
   int nextPage = 2;
   int previousPage = 0;
 
@@ -68,6 +72,11 @@ class PeopleList with ChangeNotifier {
   void setPages(int prev, int next) {
     previousPage = prev;
     nextPage = next;
+    notifyListeners();
+  }
+
+  void setFilter(String newFilter) {
+    filter = newFilter;
     notifyListeners();
   }
 
