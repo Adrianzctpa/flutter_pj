@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/fetch_service.dart';
-import '../models/people_list.dart';
+import '../models/pages_provider.dart';
 import '../models/people.dart';
 import '/components/pages.dart';
 
@@ -19,15 +19,22 @@ class _OptionsState extends State<PageOptions> {
 
   void _handleSearch() async {
     final String name = searchController.text;
-    final pplClass = Provider.of<PeopleList>(context, listen: false);
-    pplClass.setPages(0,2);
-    pplClass.setFilter(name);
+    final pageProvider = Provider.of<PagesProvider>(context, listen: false);
+    pageProvider.setDisableState(true);
+    pageProvider.setFilter(name);
   
     final data = name.isNotEmpty 
     ? await FetchService().getPeopleByName(name)
     : await FetchService().getPeople();
 
-    widget.onSearch(data!.results as List<People>, data);
+    if (data!.count > 10) {
+      pageProvider.setPages(0,2);
+    } else {
+      pageProvider.setPages(0,0);
+    }
+
+    widget.onSearch(data.results as List<People>, data);
+    pageProvider.setDisableState(false);
   }
 
 

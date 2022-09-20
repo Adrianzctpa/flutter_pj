@@ -14,6 +14,10 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
+  bool isCached = false;
+
+  List<Films> films = [];
+
   Future<List<Films>> loadFilms(List<String> url) async {
     final List<Films> films = [];
 
@@ -70,11 +74,86 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
+  Widget _createPeopleInfo(BuildContext context, People person) {
+    return Column(
+      children: [
+        _createSectionTitle(context, 'General Details'),
+        _createSectionContainer(
+          SingleChildScrollView(
+            child: Column(children: <Widget>[
+                _createCardDetail('Height: ${person.height}cm'),
+                const Divider(),
+                _createCardDetail('Mass: ${person.mass}kg'),
+                const Divider(),
+                _createCardDetail('Gender: ${person.gender}'),
+                const Divider(),
+                _createCardDetail('Birth Year: ${person.birthYear}'),
+                const Divider(),
+                _createCardDetail('Hair Color: ${person.hairColor}'),
+                const Divider(),
+                _createCardDetail('Skin Color: ${person.skinColor}'),
+              ]
+            ),
+          )
+        ),
+      ],
+    );
+  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+
+
+  // }
+  get pplClass {
+    return Provider.of<PeopleList>(context, listen: false);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Caching manager
+    final cached = pplClass.cachedPeople;
+    final person = ModalRoute.of(context)!.settings.arguments as People;
+    
+    if (cached.isEmpty) {
+      loadFilms(person.films).then((loadedFilms) {
+        pplClass.setCachedPeople(person, loadedFilms);
+      });
+      return;
+    }
+
+    final cacheList = [];
+    for (var map in cached) {
+      final mapPerson = map['person'] as People;
+      cacheList.add(mapPerson.name);
+    }
+
+    if (!cacheList.contains(person.name)) {
+      loadFilms(person.films).then((loadedFilms) {
+        pplClass.setCachedPeople(person, loadedFilms);
+      });
+      return;
+    }
+
+    for (var i = 0; i < cacheList.length; i++) {
+      if (cacheList[i] == person.name) {
+        setState(() {
+          isCached = true;
+          films = cached[i]['films'];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context){
+    final pplClass = Provider.of<PeopleList>(context);
     final person = ModalRoute.of(context)!.settings.arguments as People;
-    final favPeopleSet = Provider.of<PeopleList>(context).toggleFavorite;
-    final isFavorite = Provider.of<PeopleList>(context).isFavorite(person);
+    final favPeopleSet = pplClass.toggleFavorite;
+    final isFavorite = pplClass.isFavorite(person);
 
     return Scaffold(
       appBar: AppBar(
@@ -102,7 +181,23 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 fit: BoxFit.contain,
               ),
             ),
-            FutureBuilder<List<Films>>(
+            isCached 
+            ? Column(
+              children: [
+                _createSectionTitle(context, 'Films'),
+                _createSectionContainer(
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemBuilder: (ctx, index) {
+                      return _createCardDetail(films[index].title);
+                    },
+                    itemCount: films.length,
+                  ),
+                ),
+                _createPeopleInfo(context, person)
+              ],
+            )
+            : FutureBuilder<List<Films>>(
               future: loadFilms(person.films),
               builder: (BuildContext context, AsyncSnapshot<List<Films>> snapshot) {
                 if (!snapshot.hasData) {
@@ -127,25 +222,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           }
                         ),
                       ),
-                      _createSectionTitle(context, 'General Details'),
-                      _createSectionContainer(
-                        SingleChildScrollView(
-                          child: Column(children: <Widget>[
-                              _createCardDetail('Height: ${person.height}cm'),
-                              const Divider(),
-                              _createCardDetail('Mass: ${person.mass}kg'),
-                              const Divider(),
-                              _createCardDetail('Gender: ${person.gender}'),
-                              const Divider(),
-                              _createCardDetail('Birth Year: ${person.birthYear}'),
-                              const Divider(),
-                              _createCardDetail('Hair Color: ${person.hairColor}'),
-                              const Divider(),
-                              _createCardDetail('Skin Color: ${person.skinColor}'),
-                            ]
-                          ),
-                        )
-                      ),
+                      _createPeopleInfo(context, person)
                     ]
                   );
                 }

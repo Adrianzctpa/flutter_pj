@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/models/people_list.dart';
+import 'models/pages_provider.dart';
 import 'screens/people_screen.dart';
 import 'screens/details_screen.dart';
 import 'screens/tabs_screen.dart';
@@ -15,8 +16,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => PeopleList(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<PeopleList>(
+          create: (_) => PeopleList()
+        ),
+        ChangeNotifierProxyProvider<PeopleList, PagesProvider>(
+          create: (_) => PagesProvider(), 
+          update:(_, peopleList, pages) => pages!..update(peopleList)
+        ),
+      ],
       child: MaterialApp(
         title: 'SWAPI Info',
         theme: ThemeData(
