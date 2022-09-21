@@ -1,4 +1,4 @@
-package com.example.flutter_pj
+package com.example.swapi_app
 
 import io.flutter.embedding.android.FlutterActivity
 

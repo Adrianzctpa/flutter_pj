@@ -44,11 +44,20 @@ class MainDrawer extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          _createItem(
-            Icons.home,
-            'Home',
-            () => Navigator.of(context).pushReplacementNamed(AppRoutes.homePage),
+          Expanded(
+            child: _createItem(
+              Icons.home,
+              'Home',
+              () => Navigator.of(context).pushReplacementNamed(AppRoutes.homePage),
+            ),
           ),
+          const Text(
+            'Adrian Possidério',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          )
         ],
       ),
     );
