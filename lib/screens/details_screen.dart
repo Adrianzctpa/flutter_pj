@@ -22,7 +22,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     final List<Films> films = [];
 
     for (var i = 0; i < url.length; i++) {
-      final film = await FetchService().genericFetcher(url[i]);
+      final film = await FetchService().getSpecificFilm(url[i]);
       if (film != null) {
         films.add(film);
       }
@@ -100,27 +100,17 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-
-
-
-  // }
-  get pplClass {
-    return Provider.of<PeopleList>(context, listen: false);
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final pplClass = Provider.of<PeopleList>(context, listen: false);
     // Caching manager
     final cached = pplClass.cachedPeople;
     final person = ModalRoute.of(context)!.settings.arguments as People;
     
     if (cached.isEmpty) {
       loadFilms(person.films).then((loadedFilms) {
-        pplClass.setCachedPeople(person, loadedFilms);
+        pplClass.postAndCache(person, loadedFilms);
       });
       return;
     }
@@ -133,7 +123,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
     if (!cacheList.contains(person.name)) {
       loadFilms(person.films).then((loadedFilms) {
-        pplClass.setCachedPeople(person, loadedFilms);
+        pplClass.postAndCache(person, loadedFilms);
       });
       return;
     }
@@ -142,10 +132,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
       if (cacheList[i] == person.name) {
         setState(() {
           isCached = true;
-          films = cached[i]['films'];
+          films = cached[i]['films'] as List<Films>;
         });
       }
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

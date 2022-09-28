@@ -8,21 +8,11 @@ class FetchService {
   final api = SWAPIRoutes.swAPI;
   final filmsAPI = SWAPIRoutes.filmsAPI;
 
-  Future<Films?> genericFetcher(String uri) async {
+  Future<Films?> getSpecificFilm(String uri) async {
     final response = await client.get(Uri.parse(uri));
     if (response.statusCode == 200) {
       final json = response.body;
       return filmFromJson(json);
-    }
-
-    return null;
-  }
-
-  Future<Getter?> getFilms() async {
-    final response = await client.get(Uri.parse(filmsAPI));
-    if (response.statusCode == 200) {
-      final json = response.body;
-      return getterFromJson(json);
     }
 
     return null;

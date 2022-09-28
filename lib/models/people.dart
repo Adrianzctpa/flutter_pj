@@ -17,12 +17,13 @@ class Getter {
     final dynamic previous;
     final List<People>? results;
 
-    factory Getter.fromJson(Map<String, dynamic> json) => Getter(
+    factory Getter.fromJson(Map<String, dynamic> json) { 
+     return Getter(
         count: json["count"],
         next: json["next"],
         previous: json["previous"],
         results: List<People>.from(json["results"].map((x) => People.fromJson(x))),
-    );
+    );}
 
     Map<String, dynamic> toJson() => {
         "count": count,
@@ -62,16 +63,27 @@ class People {
     final String birthYear;
     final String gender;
     final String homeworld;
-    final List<String> films;
-    final List<String> species;
-    final List<String> vehicles;
-    final List<String> starships;
+    List<String> films = [];
+    List<String> species = [];
+    List<String> vehicles = [];
+    List<String> starships = [];
     final DateTime created;
     final DateTime edited;
     final String url;
     final int id;
 
-    factory People.fromJson(Map<String, dynamic> json) {
+    factory People.fromJson(Map<String, dynamic> rawJson) {
+      final checkList = ['films', 'species', 'vehicles', 'starships'];
+
+      Map<String, dynamic> json = rawJson;
+
+      for (var i = 0; i < checkList.length; i++) {
+        final key = checkList[i];
+        if (json[key] == null) {
+          json[key] = ['none'];
+        }
+      }
+
       final RegExp getNumbersFromStr = RegExp(r'[^0-9]');
       final id = int.parse(json['url'].replaceAll(getNumbersFromStr, ''));
 
@@ -87,7 +99,7 @@ class People {
         homeworld: json["homeworld"],
         films: List<String>.from(json["films"].map((x) => x)),
         species: List<String>.from(json["species"].map((x) => x)),
-        vehicles: List<String>.from(json["vehicles"].map((x) => x)),
+        vehicles: List<String>.from(json['vehicles'].map((x) => x)),  
         starships: List<String>.from(json["starships"].map((x) => x)),
         created: DateTime.parse(json["created"]),
         edited: DateTime.parse(json["edited"]),
@@ -106,9 +118,9 @@ class People {
         "birth_year": birthYear,
         "gender": gender,
         "homeworld": homeworld,
-        "films": List<dynamic>.from(films.map((x) => x)),
+        "films": List<dynamic>.from(films.map((x) => x)),      
         "species": List<dynamic>.from(species.map((x) => x)),
-        "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
+        "vehicles": List<dynamic>.from(vehicles.map((x) => x)),      
         "starships": List<dynamic>.from(starships.map((x) => x)),
         "created": created.toIso8601String(),
         "edited": edited.toIso8601String(),

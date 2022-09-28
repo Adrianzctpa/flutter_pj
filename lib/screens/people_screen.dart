@@ -40,6 +40,8 @@ class _PeopleScreenState extends State<PeopleScreen> {
 
     if (pplClass.id == 0) {
       final data = await FetchService().getPeople();
+      pplClass.setFavorites();
+      pplClass.setCachedPeople();
       pplClass.setInfo(data!.results as List<People>, data, num);
     }
 
