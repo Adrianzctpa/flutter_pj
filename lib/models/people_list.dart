@@ -12,6 +12,9 @@ class PeopleList with ChangeNotifier {
   int _id = 0;
   final List<Map<String, Object>> _cachedPeople = [];
 
+  final String _token;
+  PeopleList(this._token);
+
   void setInfo(List<People> people, Getter info, [int? id]) {
     _ppl = people;
     _getter = info;
@@ -30,7 +33,7 @@ class PeopleList with ChangeNotifier {
   }
 
   void setCachedPeople() { 
-    final getFuture = http.get(Uri.parse('$fbUrl/cached.json'));
+    final getFuture = http.get(Uri.parse('$fbUrl/cached.json?auth=$_token'));
       getFuture.then((resp) {
         if (resp.statusCode == 200) {
           if (resp.body == 'null') return;
@@ -54,7 +57,7 @@ class PeopleList with ChangeNotifier {
   List<Map<String,Object>> postAndCache(People person, List<Films> films) {
      if (!isCached(person)) {
       http.post(
-        Uri.parse('$fbUrl/cached.json'),
+        Uri.parse('$fbUrl/cached.json?auth=$_token'),
         body: jsonEncode({
           'name': person.name,
           'films': films,
@@ -81,7 +84,7 @@ class PeopleList with ChangeNotifier {
     if (_favoritePeople.contains(person)) {
       final delFuture = http.get(
         Uri.parse(
-          '$fbUrl/favorites.json/?orderBy="name"&equalTo="${person.name}"'
+          '$fbUrl/favorites.json/?auth=$_token&orderBy="name"&equalTo="${person.name}"'
         )
       );
 
@@ -89,7 +92,7 @@ class PeopleList with ChangeNotifier {
         json.decode(resp.body).forEach((key, value) {
           http.delete(
             Uri.parse(
-              '$fbUrl/favorites/$key.json'
+              '$fbUrl/favorites/$key.json?auth=$_token'
             )
           );
           _favoritePeople.remove(person);
@@ -98,7 +101,7 @@ class PeopleList with ChangeNotifier {
       });
     } else {
       http.post(
-        Uri.parse('$fbUrl/favorites.json'),
+        Uri.parse('$fbUrl/favorites.json?auth=$_token'),
         body: jsonEncode({
           'name': person.name,
           'info': person
@@ -110,7 +113,7 @@ class PeopleList with ChangeNotifier {
   }
 
   void setFavorites() {
-    final getFuture = http.get(Uri.parse('$fbUrl/favorites.json'));
+    final getFuture = http.get(Uri.parse('$fbUrl/favorites.json?auth=$_token'));
     getFuture.then((resp) {  
       if (jsonDecode(resp.body) == null) return;  
 

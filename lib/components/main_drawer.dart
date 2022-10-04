@@ -48,7 +48,7 @@ class MainDrawer extends StatelessWidget {
             child: _createItem(
               Icons.home,
               'Home',
-              () => Navigator.of(context).pushReplacementNamed(AppRoutes.homePage),
+              () => Navigator.of(context).pushReplacementNamed(AppRoutes.authOrHomeSwapper),
             ),
           ),
           const Text(

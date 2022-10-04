@@ -1,5 +1,5 @@
 class AppRoutes {
-  static const homePage = '/';
+  static const authOrHomeSwapper = '/';
   static const peoplePage = '/people';
   static const personDetails = '/person-details'; 
 }

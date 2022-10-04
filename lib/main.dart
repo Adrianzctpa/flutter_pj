@@ -3,7 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import '/models/people_list.dart';
 import 'models/pages_provider.dart';
-import 'screens/people_screen.dart';
+import 'models/auth_provider.dart';
+import 'screens/screen_swapper.dart';
 import 'screens/details_screen.dart';
 import 'screens/tabs_screen.dart';
 import 'utils/app_routes.dart';
@@ -20,8 +21,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<PeopleList>(
-          create: (_) => PeopleList()
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider()
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, PeopleList>(
+          create: (_) => PeopleList(''),
+          update: (_, auth, peopleList) => PeopleList(
+            auth.info!['token'] as String
+          )
         ),
         ChangeNotifierProxyProvider<PeopleList, PagesProvider>(
           create: (_) => PagesProvider(), 
@@ -48,8 +55,7 @@ class MyApp extends StatelessWidget {
           )
         ),
         routes: {
-          AppRoutes.homePage: (ctx) => const TabsScreen(),
-          AppRoutes.peoplePage: (ctx) => const PeopleScreen(),
+          AppRoutes.authOrHomeSwapper: (ctx) => const ScreenSwapper(),
           AppRoutes.personDetails: (ctx) => const DetailsScreen(),
         },
         onUnknownRoute: (settings) {
