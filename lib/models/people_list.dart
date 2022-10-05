@@ -13,7 +13,8 @@ class PeopleList with ChangeNotifier {
   final List<Map<String, Object>> _cachedPeople = [];
 
   final String _token;
-  PeopleList(this._token);
+  final String _uid;
+  PeopleList(this._token, this._uid);
 
   void setInfo(List<People> people, Getter info, [int? id]) {
     _ppl = people;
@@ -24,10 +25,19 @@ class PeopleList with ChangeNotifier {
 
   bool isCached(People person) {
     final cacheList = [];
-    for (var i = 0; i < _cachedPeople.length; i++) {
-      final mapPerson = _cachedPeople[i]['person'] as People;
-      cacheList.add(mapPerson.name);  
-    } 
+    final getFuture = http.get(Uri.parse('$fbUrl/cached.json?auth=$_token'));
+      getFuture.then((resp) {
+        if (resp.statusCode == 200) {
+          if (resp.body == 'null') return;
+          final data = Map<String, dynamic>.from(jsonDecode(resp.body));
+
+          data.forEach((key, value) {
+            final pers = People.fromJson(value['info']);
+            cacheList.add(pers.name);
+          });
+        }
+      }
+    );
 
     return cacheList.contains(person.name);
   }
@@ -84,7 +94,7 @@ class PeopleList with ChangeNotifier {
     if (_favoritePeople.contains(person)) {
       final delFuture = http.get(
         Uri.parse(
-          '$fbUrl/favorites.json/?auth=$_token&orderBy="name"&equalTo="${person.name}"'
+          '$fbUrl/userFavorites/$_uid.json?auth=$_token&orderBy="name"&equalTo="${person.name}"'
         )
       );
 
@@ -92,7 +102,7 @@ class PeopleList with ChangeNotifier {
         json.decode(resp.body).forEach((key, value) {
           http.delete(
             Uri.parse(
-              '$fbUrl/favorites/$key.json?auth=$_token'
+              '$fbUrl/userFavorites/$_uid/$key.json?auth=$_token'
             )
           );
           _favoritePeople.remove(person);
@@ -101,7 +111,7 @@ class PeopleList with ChangeNotifier {
       });
     } else {
       http.post(
-        Uri.parse('$fbUrl/favorites.json?auth=$_token'),
+        Uri.parse('$fbUrl/userFavorites/$_uid.json?auth=$_token'),
         body: jsonEncode({
           'name': person.name,
           'info': person
@@ -113,7 +123,7 @@ class PeopleList with ChangeNotifier {
   }
 
   void setFavorites() {
-    final getFuture = http.get(Uri.parse('$fbUrl/favorites.json?auth=$_token'));
+    final getFuture = http.get(Uri.parse('$fbUrl/userFavorites/$_uid.json?auth=$_token'));
     getFuture.then((resp) {  
       if (jsonDecode(resp.body) == null) return;  
 

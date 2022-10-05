@@ -229,7 +229,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            favPeopleSet(person);
+            favPeopleSet(
+              person
+            );
           });
         },
         child: Icon(
