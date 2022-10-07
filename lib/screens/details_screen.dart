@@ -104,37 +104,38 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final pplClass = Provider.of<PeopleList>(context, listen: false);
+    
     // Caching manager
     final cached = pplClass.cachedPeople;
     final person = ModalRoute.of(context)!.settings.arguments as People;
     
-    if (cached.isEmpty) {
-      loadFilms(person.films).then((loadedFilms) {
-        pplClass.postAndCache(person, loadedFilms);
-      });
-      return;
-    }
+    if (cached.isNotEmpty) {
+      final cacheList = [];
+      for (var map in cached) {
+        final mapPerson = map['person'] as People;
+        cacheList.add(mapPerson.name);
+      }
 
-    final cacheList = [];
-    for (var map in cached) {
-      final mapPerson = map['person'] as People;
-      cacheList.add(mapPerson.name);
-    }
-
-    if (!cacheList.contains(person.name)) {
-      loadFilms(person.films).then((loadedFilms) {
-        pplClass.postAndCache(person, loadedFilms);
-      });
-      return;
-    }
-
-    for (var i = 0; i < cacheList.length; i++) {
-      if (cacheList[i] == person.name) {
-        setState(() {
-          isCached = true;
-          films = cached[i]['films'] as List<Films>;
+      if (!cacheList.contains(person.name)) {
+        loadFilms(person.films).then((loadedFilms) {
+          pplClass.postAndCache(person, loadedFilms);
+          cacheList.add(person.name);
+          cached.add({'person': person, 'films': loadedFilms});
         });
       }
+
+      for (var i = 0; i < cacheList.length; i++) {
+        if (cacheList[i] == person.name) {
+          setState(() {
+            isCached = true;
+            films = cached[i]['films'] as List<Films>;
+          });
+        }
+      }
+    } else {
+      loadFilms(person.films).then((loadedFilms) {
+        pplClass.postAndCache(person, loadedFilms);
+      });
     }
   }
 

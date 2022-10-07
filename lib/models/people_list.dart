@@ -53,6 +53,7 @@ class PeopleList with ChangeNotifier {
             final pers = People.fromJson(value['info']);
             final List films = value['films'].toList();
             final List<Films> filmsList = [];
+            pers.setKey(key);
             for (var i = 0; i < films.length; i++) {
               filmsList.add(Films.fromJson(value['films'][i]));
             }
@@ -90,47 +91,74 @@ class PeopleList with ChangeNotifier {
   // Favorites
   final List<People> _favoritePeople = [];
 
-  void toggleFavorite(People person) {
-    if (_favoritePeople.contains(person)) {
-      final delFuture = http.get(
-        Uri.parse(
-          '$fbUrl/userFavorites/$_uid.json?auth=$_token&orderBy="name"&equalTo="${person.name}"'
-        )
-      );
+  void getAndRemoveFavorite(People person) {
+    final delFuture = http.get(
+      Uri.parse(
+        '$fbUrl/userFavorites/$_uid.json?auth=$_token&orderBy="name"&equalTo="${person.name}"'
+      )
+    );
 
-      delFuture.then((resp) {
-        json.decode(resp.body).forEach((key, value) {
-          http.delete(
-            Uri.parse(
-              '$fbUrl/userFavorites/$_uid/$key.json?auth=$_token'
-            )
-          );
-          _favoritePeople.remove(person);
-          notifyListeners();
-        });
+    delFuture.then((resp) {
+      json.decode(resp.body).forEach((key, value) {
+        http.delete(
+          Uri.parse(
+            '$fbUrl/userFavorites/$_uid/$key.json?auth=$_token'
+          )
+        );
+        _favoritePeople.remove(person);
+        notifyListeners();
       });
-    } else {
-      http.post(
-        Uri.parse('$fbUrl/userFavorites/$_uid.json?auth=$_token'),
-        body: jsonEncode({
-          'name': person.name,
-          'info': person
-        })
-      );
-      _favoritePeople.add(person);
-      notifyListeners();
+    });
+  }
+
+  void postFavorite(People person) {
+    final postFuture = http.post(
+      Uri.parse('$fbUrl/userFavorites/$_uid.json?auth=$_token'),
+      body: jsonEncode({
+        'name': person.name,
+        'info': person
+      })
+    );
+
+    postFuture.then((resp) {
+      if (resp.statusCode == 200) {
+        final key = json.decode(resp.body)['name'];
+        person.setKey(key);
+        _favoritePeople.add(person);
+        notifyListeners();
+      }
+    });
+  }
+
+  void toggleFavorite(People person) {
+    if (!_favoritePeople.contains(person)) {
+      postFavorite(person);
+      return;
+    } 
+
+    if (person.key == null) {
+      getAndRemoveFavorite(person);
+      return;
     }
+
+    http.delete(
+      Uri.parse(
+        '$fbUrl/userFavorites/$_uid/${person.key}.json?auth=$_token'
+      )
+    );
+    _favoritePeople.remove(person);
+    notifyListeners();
   }
 
   void setFavorites() {
     final getFuture = http.get(Uri.parse('$fbUrl/userFavorites/$_uid.json?auth=$_token'));
     getFuture.then((resp) {  
       if (jsonDecode(resp.body) == null) return;  
-
       final jsonData = Map<String, dynamic>.from(jsonDecode(resp.body));
       jsonData.forEach((key, value) {
         final Map<String, dynamic> info = value['info'];
         final person = People.fromJson(info);
+        person.setKey(key);
 
         _favoritePeople.add(person);
       });

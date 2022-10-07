@@ -27,8 +27,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<AuthProvider, PeopleList>(
           create: (_) => PeopleList('', ''),
           update: (_, auth, peopleList) => PeopleList(
-            auth.info!['token'] as String,
-            auth.info!['uid'] as String
+            auth.token ?? '',
+            auth.uid ?? ''
           )
         ),
         ChangeNotifierProxyProvider<PeopleList, PagesProvider>(

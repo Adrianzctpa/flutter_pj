@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/auth_provider.dart';
 import '../utils/app_routes.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -43,12 +45,24 @@ class MainDrawer extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 20),
           Expanded(
-            child: _createItem(
-              Icons.home,
-              'Home',
-              () => Navigator.of(context).pushReplacementNamed(AppRoutes.authOrHomeSwapper),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                _createItem(
+                  Icons.home,
+                  'Home',
+                  () => Navigator.of(context).pushReplacementNamed(AppRoutes.authOrHomeSwapper),
+                ),
+                _createItem(
+                  Icons.exit_to_app,
+                  'Logout',
+                  () {
+                    Provider.of<AuthProvider>(context, listen: false).logout();
+                    Navigator.of(context).pushReplacementNamed(AppRoutes.authOrHomeSwapper);
+                  },
+                ),
+              ]
             ),
           ),
           const Text(

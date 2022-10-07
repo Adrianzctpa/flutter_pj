@@ -10,8 +10,17 @@ class ScreenSwapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of(context);
-    return auth.isAuthenticated 
-    ? const TabsScreen() 
-    : const AuthScreen();
+    return FutureBuilder(
+      future: auth.autoLogin(),
+      builder: (ctx, snapshot) => snapshot.connectionState == ConnectionState.waiting
+        ? const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : auth.isAuthenticated
+          ? const TabsScreen()
+          : const AuthScreen(),
+    );
   }
 }

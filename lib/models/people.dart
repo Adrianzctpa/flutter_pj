@@ -51,7 +51,8 @@ class People {
       required this.created,
       required this.edited,
       required this.url,
-      required this.id
+      required this.id,
+      this.key,
     });
 
     final String name;
@@ -71,6 +72,7 @@ class People {
     final DateTime edited;
     final String url;
     final int id;
+    String? key;
 
     factory People.fromJson(Map<String, dynamic> rawJson) {
       final checkList = ['films', 'species', 'vehicles', 'starships'];
@@ -127,4 +129,8 @@ class People {
         "url": url,
         "id": id
     };
+
+    void setKey(String str) {
+      key = str;
+    }
 }
