@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import '/models/people_list.dart';
 import 'models/pages_provider.dart';
@@ -9,10 +8,7 @@ import 'screens/details_screen.dart';
 import 'screens/tabs_screen.dart';
 import 'utils/app_routes.dart';
 
-Future<void> main() async {
-  await dotenv.load();
-  runApp(const MyApp());
-}
+main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

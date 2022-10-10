@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "swapi_app",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=API_KEY=your_api_key",
+                "--dart-define=FB_URL=your_firebase_url"
+            ]
+        }
+    ]
+}

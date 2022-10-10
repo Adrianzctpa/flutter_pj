@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'films.dart';
 import 'people.dart';
 
 class PeopleList with ChangeNotifier {
-  final fbUrl = dotenv.env['FB_URL'] ?? 'FB_URL is null';
+  // Environment variables will be defined in dart-define as it is more secure
+  static const fbUrl = String.fromEnvironment('FB_URL');
   List<People> _ppl = [];
   Getter _getter = Getter(next: null, previous: null, count: 0, results: []);
   int _id = 0;

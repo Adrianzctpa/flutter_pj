@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:swapi_app/data/store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:swapi_app/exceptions/auth_exception.dart';
 
 class AuthProvider with ChangeNotifier {
-  final _apiKey = dotenv.env['API_KEY'] ?? 'API_KEY is null';
+  static const _apiKey = String.fromEnvironment('API_KEY');
   String? _token;
   String? _email;
   String? _refreshToken;
@@ -61,7 +60,6 @@ class AuthProvider with ChangeNotifier {
         'returnSecureToken': true,
       })
     );
-
     final body = jsonDecode(response.body);
     
     if (body['error'] != null) {
@@ -152,8 +150,13 @@ class AuthProvider with ChangeNotifier {
     final userData = await Store.getMap('userData');
     if (userData.isEmpty) return;
 
-    final expiresIn = DateTime.parse(userData['expiresIn']);
-    if (expiresIn.isBefore(DateTime.now())) return;
+    final DateTime expiresIn = userData['expiresIn'] != null
+    ? DateTime.parse(userData['expiresIn'])
+    : DateTime.now();
+
+    if (expiresIn.isBefore(DateTime.now()) || expiresIn == DateTime.now()) {
+      return;
+    }
 
     _token = userData['token'];
     _email = userData['email'];
