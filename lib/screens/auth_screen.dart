@@ -23,9 +23,9 @@ class AuthScreen extends StatelessWidget {
             )
           ),
           Center(
-            child: SizedBox(
-              width: double.infinity,
-              child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: double.infinity,
                 child: Column(
                   children: [
                     Container(
@@ -55,8 +55,8 @@ class AuthScreen extends StatelessWidget {
                     ),
                     const AuthForm()
                   ],
-                ),
-              )
+                )
+              ),
             ),
           )
         ]

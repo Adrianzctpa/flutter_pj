@@ -1,48 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/people_list.dart';
 import '../models/people.dart';
 import '../utils/app_routes.dart';
+import '../utils/swapi_routes.dart';
 
 class PersonItem extends StatelessWidget {
   const PersonItem({required this.person, Key? key}) : super(key: key);
 
   final People person;
 
-  void _selectScreen(BuildContext context) {
-    Navigator.of(context).pushNamed(
-      AppRoutes.personDetails, 
-      arguments: person
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => _selectScreen(context),
-      borderRadius: BorderRadius.circular(15),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          padding: const EdgeInsets.all(25),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            gradient: LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.secondary,
-                Theme.of(context).colorScheme.onSecondary,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: GridTile(
+          footer: GridTileBar(
+            backgroundColor: Colors.black87,
+            leading: Consumer<PeopleList>(
+              builder: (ctx, pplClass, _) => IconButton(
+                onPressed: () {
+                  pplClass.toggleFavorite(person);
+                },
+                icon: Icon(
+                    pplClass.isFavorite(person) ? Icons.star : Icons.star_border),
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+            title: Text(
+              person.name,
+              textAlign: TextAlign.center,
             ),
           ),
-          child: Center(
-            child: Text(
-              person.name,
-              style: Theme.of(context).textTheme.titleMedium,
+          child: GestureDetector(
+            child: Hero(
+              tag: person.id,
+              child: FadeInImage(
+                placeholder: const AssetImage('assets/images/placeholder-image.png'),
+                image: NetworkImage('${SWAPIRoutes.peopleImgAPI}${person.id}.jpg'),
+                fit: BoxFit.cover,
+              ),
             ),
-          )
+            onTap: () {
+              Navigator.of(context).pushNamed(
+                AppRoutes.personDetails, 
+                arguments: person
+              );
+            },
+          ),
         ),
-      ),
-    );
-  }
-
+      );
+    }
 }

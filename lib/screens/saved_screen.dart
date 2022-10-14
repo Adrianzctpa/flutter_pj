@@ -14,20 +14,35 @@ class _SavedScreenState extends State<SavedScreen> {
   @override
   Widget build(BuildContext context) {
     final favPeople = Provider.of<PeopleList>(context).favPeople;
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
 
-    if (favPeople.isEmpty) {
-      return const Center(
-        child: Text('No saved people!'),
+    return favPeople.isEmpty
+    ? const Center(
+        child: Text('No favorites yet'),
+      )
+    : Column(
+        children: [
+          Flexible(
+            child: ListView.builder(
+              itemCount: favPeople.length,
+              itemBuilder: (ctx, i) => SizedBox(
+                height: height * 0.20,
+                width: width * 0.20,
+                child: Column(
+                  children: [
+                    Flexible(
+                      child: PersonItem(
+                        person: favPeople[i]
+                      ),
+                    ),
+                    const Divider()
+                  ],
+                )
+              ),
+            ),
+          ),
+        ],
       );
-    } else {
-      return ListView.builder(
-        itemCount: favPeople.length,
-        itemBuilder: (ctx, index) {
-          return PersonItem(
-            person: favPeople[index],
-          );
-        },
-      );
-    }
   }
 }

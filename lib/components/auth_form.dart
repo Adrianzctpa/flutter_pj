@@ -12,7 +12,7 @@ class AuthForm extends StatefulWidget {
   AuthFormState createState() => AuthFormState();
 }
 
-class AuthFormState extends State<AuthForm> {
+class AuthFormState extends State<AuthForm> with SingleTickerProviderStateMixin {
   AuthState _state = AuthState.logIn;
   final _passController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -22,6 +22,10 @@ class AuthFormState extends State<AuthForm> {
     'password': '',
   };
 
+  AnimationController? _controller;
+  Animation<double>? _opacityAnimation;
+  Animation<Offset>? _offsetAnimation;
+
   bool get _isLogin {
     return _state == AuthState.logIn;
   } 
@@ -30,12 +34,49 @@ class AuthFormState extends State<AuthForm> {
     return _state == AuthState.signUp;
   } 
 
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _opacityAnimation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.linear,
+      ),
+    );
+
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(0, -1.5),
+      end: const Offset(0, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller!,
+        curve: Curves.linear,
+      ),
+    );
+  }
+
+  @override 
+  void dispose() {
+    super.dispose();
+    _controller!.dispose();
+  }
+
   void _switchAuthMode() {
     setState(() {
       if (_isLogin) {
         _state = AuthState.signUp;
+        _controller?.forward();
       } else {
         _state = AuthState.logIn;
+        _controller?.reverse();
       }
     });
   }
@@ -89,8 +130,10 @@ class AuthFormState extends State<AuthForm> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10)
       ),
-      child: Container(
-        height: _isLogin ? 310 : 400, 
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+        height: _isLogin ? 310 : 400,
         width: devSize.width * 0.75,
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -125,20 +168,33 @@ class AuthFormState extends State<AuthForm> {
                   return null;
                 },
               ),
-              if (_isSignUp)
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password'
-                  ),
-                  obscureText: true,
-                  validator: _isSignUp ? (pass) {
-                    final password = pass ?? '';
-                    if (password != _passController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  } : null, 
+              AnimatedContainer(
+                constraints: BoxConstraints(
+                  minHeight: _isLogin ? 0 : 60,
+                  maxHeight: _isLogin ? 0 : 120,
                 ),
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.linear,
+                child: FadeTransition(
+                  opacity: _opacityAnimation!,
+                  child: SlideTransition(
+                    position: _offsetAnimation!,
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Confirm Password'
+                      ),
+                      obscureText: true,
+                      validator: _isSignUp ? (pass) {
+                        final password = pass ?? '';
+                        if (password != _passController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      } : null
+                    ),
+                  )
+                ),
+              ),
               const SizedBox(height: 20),
               _isLoading 
               ? const CircularProgressIndicator() 
@@ -172,7 +228,7 @@ class AuthFormState extends State<AuthForm> {
               )
             ]
           )
-        ),
+        ),  
       )
     );
   }

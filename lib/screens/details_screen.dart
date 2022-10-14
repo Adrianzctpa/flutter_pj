@@ -152,31 +152,40 @@ class _DetailsScreenState extends State<DetailsScreen> {
     final isFavorite = pplClass.isFavorite(person);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: Center(
-          child: Text(
-            'Details for ${person.name}',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSecondary
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(person.name),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: person.id,
+                    child: FadeInImage(
+                      placeholder: const AssetImage('assets/images/placeholder-image.png'),
+                      image: NetworkImage('${SWAPIRoutes.peopleImgAPI}${person.id}.jpg'),
+                      fit: BoxFit.fill
+                    ),
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(0, 0.8),
+                        end: Alignment(0, 0),
+                        colors: <Color>[
+                          Color.fromRGBO(0, 0, 0, 0.6),
+                          Color.fromRGBO(0, 0, 0, 0),
+                        ],
+                      ),
+                    )
+                  )
+                ],
+              )
             ),
-          )
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: 300,
-              width: double.infinity,
-              alignment: Alignment.center,
-              child: Image.network(
-                '${SWAPIRoutes.peopleImgAPI}${person.id}.jpg',
-                fit: BoxFit.contain,
-              ),
-            ),
+          ),
+          SliverList(delegate: SliverChildListDelegate([
             isCached 
             ? Column(
               children: [
@@ -224,8 +233,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 }
               }
             ),
-          ]
-        ),
+          ]))
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
